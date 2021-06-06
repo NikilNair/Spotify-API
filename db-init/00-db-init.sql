@@ -69,6 +69,6 @@ INSERT INTO `reviews` VALUES
   (2,4,'This was a good playlist.',1,2),
   (3,5,'This is one of the best playlists I have ever heard',2,3);
 
-INSERT INTO `songs` VALUES (1,"default",2646308,"default.mp3",1);
+INSERT INTO `songs` VALUES (1,"default",3692806,"default.mp3",1);
 
 INSERT INTO `inPlaylist` VALUES (1,1);
