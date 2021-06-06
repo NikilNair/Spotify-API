@@ -175,12 +175,12 @@ router.put('/:id', requireAuthentication, async (req, res, next) => {
         const id = parseInt(req.params.id);
         const existingSong = await getSongById(id);
         if (existingSong) {
-          if (req.body.id === existingSong.id && req.body.userid === existingSong.userid) {
+          if (req.body.playlistid === existingSong.playlistid && req.body.userid === existingSong.userid) {
             const updateSuccessful = await replaceSongById(id, req.body);
             if (updateSuccessful) {
               res.status(200).send({
                 links: {
-                  playlist: `/playlists/${req.body.id}`,
+                  playlist: `/playlists/${req.body.playlistid}`,
                   song: `/songs/${id}`
                 }
               });

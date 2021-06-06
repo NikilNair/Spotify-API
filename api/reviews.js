@@ -42,7 +42,7 @@ router.post('/', requireAuthentication, async (req, res) => {
          * Make sure the user is not trying to review the same playlist twice.
          * If they're not, then insert their review into the DB.
          */
-        const alreadyReviewed = await hasUserReviewedPlaylist(req.body.userid, req.body.id);
+        const alreadyReviewed = await hasUserReviewedPlaylist(req.body.userid, req.body.playlistid);
         if (alreadyReviewed) {
           res.status(403).send({
             error: "User has already posted a review of this playlist"
@@ -53,7 +53,7 @@ router.post('/', requireAuthentication, async (req, res) => {
             id: id,
             links: {
               review: `/reviews/${id}`,
-              playlist: `/playlists/${req.body.id}`
+              playlist: `/playlists/${req.body.playlistid}`
             }
           });
         }
@@ -116,12 +116,12 @@ router.put('/:id', requireAuthentication, async (req, res, next) => {
         const id = parseInt(req.params.id);
         const existingReview = await getReviewById(id);
         if (existingReview) {
-          if (req.body.id === existingReview.id && req.body.userid === existingReview.userid) {
+          if (req.body.playlistid === existingReview.playlistid && req.body.userid === existingReview.userid) {
             const updateSuccessful = await replaceReviewById(id, req.body);
             if (updateSuccessful) {
               res.status(200).send({
                 links: {
-                  playlist: `/playlists/${req.body.id}`,
+                  playlist: `/playlists/${req.body.playlistid}`,
                   review: `/reviews/${id}`
                 }
               });
