@@ -76,7 +76,7 @@ router.post('/login', async(req, res, next) => {
       }
     }
     catch (err) {
-      cosole.error("  --error:", err);
+      console.error("  --error:", err);
       res.status(500).send({
         error: "Error logging in. Try again later."
       })
