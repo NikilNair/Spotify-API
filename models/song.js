@@ -82,7 +82,7 @@ exports.deleteSongById = deleteSongById;
  */
 async function getSongsByPlaylistId(id) {
   const [ results ] = await mysqlPool.query(
-    'SELECT * FROM songs WHERE playlistid = ?',
+    'SELECT songs.id, songs.name, songs.ownerid FROM songs INNER JOIN inPlaylist ON songs.id=inPlaylist.songid WHERE inPlaylist.playlistid = ?;',
     [ id ]
   );
   return results;
