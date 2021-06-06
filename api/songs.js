@@ -1,8 +1,6 @@
 const { generateAuthToken, requireAuthentication } = require('../lib/auth');
 const mysqlPool = require('../lib/mysqlPool');
 
-const fs = require('fs');
-
 
 const multer = require('multer');
 const crypto = require('crypto');
@@ -125,19 +123,7 @@ router.get('/:id', async (req, res, next) => {
   try {
     const song = await getSongById(parseInt(req.params.id));
     if (song) {
-      var filePath = `${__dirname}/../media/${song.path}`;
-      var stat = fs.statSync(filePath);
-      var total = stat.size;
-      
-      if(req.headers.range){
-        res.status(206).send({err: "unfinsehed"});
-      }
-      else{
-        console.log(total);
-        console.log(song.length);
-        res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'audio/mpeg' });
-        fs.createReadStream(filePath).pipe(res);
-      }
+      res.status(200).send(song);
       
     } else {
       next();
