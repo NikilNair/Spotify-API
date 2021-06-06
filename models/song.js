@@ -10,7 +10,7 @@ const { extractValidFields } = require('../lib/validation');
  */
 const SongSchema = {
   userid: { required: true },
-  playlistid: { required: true },
+  id: { required: true },
   caption: { required: false }
 };
 exports.SongSchema = SongSchema;
