@@ -8,6 +8,8 @@ const router = require('express').Router();
 
 router.get('/songs/:id', async (req, res) => {
     res.status(500).send({err: "not implemented"})
+    console.log(req.header);
+    console.log(req.body);
 });
 
 module.exports = router;

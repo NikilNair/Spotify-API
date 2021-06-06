@@ -9,9 +9,10 @@ const { extractValidFields } = require('../lib/validation');
  * Schema describing required/optional fields of a song object.
  */
 const SongSchema = {
-  userid: { required: true },
-  playlistid: { required: true },
-  caption: { required: false }
+  name: { required: true },
+  length: { required: true },
+  path: { required: true },
+  ownerid: { required: true }
 };
 exports.SongSchema = SongSchema;
 
