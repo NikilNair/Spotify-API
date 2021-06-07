@@ -14,8 +14,11 @@ const {
   getPlaylistDetailsById,
   replacePlaylistById,
   deletePlaylistById,
-  getPlaylistsByOwnerdId
+  getPlaylistsByOwnerdId,
+  addSongToPlaylist,
+  checkSongInPlaylist
 } = require('../models/playlist');
+const { getSongsByPlaylistId, getSongById } = require('../models/song');
 
 /*
  * Route to return a paginated list of playlists.
@@ -155,6 +158,37 @@ router.put('/:id', requireAuthentication, async (req, res, next) => {
     }
   }
 
+});
+
+router.post('/:id/add', async (req, res, next) => {
+  let playlist = await getSongsByPlaylistId(parseInt(req.params.id));
+  let song = await getSongById(parseInt(req.body.songid));
+
+  if(! playlist){
+    next();
+  }
+  if(! song){
+    res.status(400).send({err: "song with id does not exist"});
+    return;
+  }
+
+  let exists = await checkSongInPlaylist(parseInt(req.params.id), parseInt(req.body.songid));
+  console.log(exists);
+  if(exists){
+    res.status(403).send({err: "you may only add a song to a playlist once!"});
+    return;
+  }
+
+  //todo verify auth here
+
+  const result = await addSongToPlaylist(parseInt(req.params.id), parseInt(req.body.songid));
+
+  if(!! result){
+    res.status(201).send();
+  }
+  else{
+    res.status(500).send({err: "unable to add song to playlist."})
+  }
 });
 
 /*
