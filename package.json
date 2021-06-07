@@ -5,9 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "env": "export MYSQL_DATABASE=\"spotifylike\" MYSQL_USER=\"spotifylike\" MYSQL_PASSWORD=\"hunter2\"",
-    "start": "npm run end && node server.js",
-    "dev": "npm run env && NODE_ENV=development && nodemon server.js"
+    "start": "node server.js",
+    "dev": "NODE_ENV=development && nodemon server.js"
   },
   "author": "Nikil Nair <nairni@oregonstate.edu> and Bradley Gore<gorebr@oregonstate.edu>",
   "license": "UNLICENSED",
