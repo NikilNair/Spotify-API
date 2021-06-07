@@ -10,7 +10,7 @@ const { extractValidFields } = require('../lib/validation');
  */
 const SongSchema = {
   userid: { required: true },
-  id: { required: true },
+  playlistid: { required: true },
   caption: { required: false }
 };
 exports.SongSchema = SongSchema;
@@ -82,7 +82,7 @@ exports.deleteSongById = deleteSongById;
  */
 async function getSongsByPlaylistId(id) {
   const [ results ] = await mysqlPool.query(
-    'SELECT * FROM songs WHERE id = ?',
+    'SELECT * FROM songs WHERE playlistid = ?',
     [ id ]
   );
   return results;
