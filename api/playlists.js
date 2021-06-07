@@ -64,6 +64,7 @@ router.post('/', requireAuthentication, async (req, res) => {
     res.status(403).send({
       error: "Unauthorized to access the specified resource"
     });
+    return;
   }
   else {
     if (validateAgainstSchema(req.body, PlaylistSchema)) {
@@ -128,6 +129,7 @@ router.put('/:id', requireAuthentication, async (req, res, next) => {
     res.status(403).send({
       error: "Unauthorized to access the specified resource"
     });
+    return;
   }
   else {
     if (validateAgainstSchema(req.body, PlaylistSchema)) {
@@ -170,6 +172,15 @@ router.post('/:id/add', requireAuthentication, async (req, res, next) => {
     return;
   }
 
+  const oldPlaylist = await getPlaylistDetailsById(req.params.id);
+
+  if (req.user !== oldPlaylist.ownerid && req.admin !== 1) {
+    res.status(403).send({
+      error: "Unauthorized to access the specified resource"
+    });
+    return;
+  }
+
   let exists = await checkSongInPlaylist(parseInt(req.params.id), parseInt(req.body.songid));
   console.log(exists);
   if(exists){
@@ -177,13 +188,7 @@ router.post('/:id/add', requireAuthentication, async (req, res, next) => {
     return;
   }
 
-  const oldPlaylist = await getPlaylistDetailsById(req.params.id);
-
-  if (req.user !== oldPlaylist.ownerid && req.admin !== 1) {
-    res.status(403).send({
-      error: "Unauthorized to access the specified resource"
-    });
-  }
+  
 
 
   const results = await addSongToPlaylist(parseInt(req.params.id), parseInt(req.body.songid));
@@ -207,6 +212,7 @@ router.delete('/:id', requireAuthentication, async (req, res, next) => {
     res.status(403).send({
       error: "Unauthorized to access the specified resource"
     });
+    return;
   }
   else {
     try {
