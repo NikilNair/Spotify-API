@@ -1,3 +1,4 @@
+
 /*
  * Review schema and data accessor methods.
  */
@@ -10,7 +11,7 @@ const { extractValidFields } = require('../lib/validation');
  */
 const ReviewSchema = {
   userid: { required: true },
-  playlistid: { required: true },
+  id: { required: true },
   stars: { required: true },
   review: { required: false }
 };
@@ -25,7 +26,7 @@ exports.ReviewSchema = ReviewSchema;
  */
 async function hasUserReviewedPlaylist(userid, playlistid) {
   const [ results ] = await mysqlPool.query(
-    'SELECT COUNT(*) AS count FROM reviews WHERE userid = ? AND playlistid = ?',
+    'SELECT COUNT(*) AS count FROM reviews WHERE userid = ? AND id = ?',
     [ userid, playlistid ]
   );
   return results[0].count > 0;
@@ -99,7 +100,7 @@ exports.deleteReviewById = deleteReviewById;
  */
 async function getReviewsByPlaylistId(id) {
   const [ results ] = await mysqlPool.query(
-    'SELECT * FROM reviews WHERE playlistid = ?',
+    'SELECT * FROM reviews WHERE id = ?',
     [ id ]
   );
   return results;
