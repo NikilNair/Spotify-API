@@ -177,9 +177,9 @@ router.post('/:id/add', requireAuthentication, async (req, res, next) => {
     return;
   }
 
-  const playlist = await getPlaylistDetailsById(req.params.id);
+  const oldPlaylist = await getPlaylistDetailsById(req.params.id);
 
-  if (req.user !== playlist.ownerid && req.admin !== 1) {
+  if (req.user !== oldPlaylist.ownerid && req.admin !== 1) {
     res.status(403).send({
       error: "Unauthorized to access the specified resource"
     });
