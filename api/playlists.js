@@ -16,7 +16,8 @@ const {
   deletePlaylistById,
   getPlaylistsByOwnerdId,
   addSongToPlaylist,
-  checkSongInPlaylist
+  checkSongInPlaylist,
+  getPlaylistsByOwnerId
 } = require('../models/playlist');
 const { getSongsByPlaylistId, getSongById } = require('../models/song');
 
@@ -52,17 +53,14 @@ router.get('/', async (req, res) => {
  * Route to create a new playlist.
  */
 router.post('/', requireAuthentication, async (req, res) => {
-  let counter = 0;
-  const [ result ] = await mysqlPool.query(
-    'SELECT admin FROM users WHERE id = ?',
-    req.user
-  );
-  console.log(" --Typeofavriable:",typeof(result[0].admin));
-  if (result[0].admin === 1) {
-    counter = 1;
+  if(! req.body.ownerid){
+    res.status(400).send({
+      error: "owner ID is required"
+    });
+    return;
   }
 
-  if (req.user !== parseInt(req.params.ownerid) && counter !== 1) {
+  if (req.user !== parseInt(req.body.ownerid) && req.admin !== 1) {
     res.status(403).send({
       error: "Unauthorized to access the specified resource"
     });
@@ -115,18 +113,18 @@ router.get('/:id', async (req, res, next) => {
  * Route to replace data for a playlist.
  */
 router.put('/:id', requireAuthentication, async (req, res, next) => {
-  let counter = 0;
-  const [ result ] = await mysqlPool.query(
-    'SELECT admin FROM users WHERE id = ?',
-    req.user
-  );
-  console.log(" --Typeofavriable:",typeof(result[0].admin));
-  if (result[0].admin === 1) {
-    counter = 1;
+  if(! req.body.ownerid){
+    res.status(400).send({
+      error: "owner ID is required"
+    });
+    return;
   }
 
+  const oldPlaylist = await getPlaylistDetailsById(req.params.id);
 
-  if (req.user !== parseInt(req.params.ownerid) && counter !== 1) {
+
+
+  if (req.user !== oldPlaylist.ownerid && req.admin !== 1) {
     res.status(403).send({
       error: "Unauthorized to access the specified resource"
     });
@@ -179,19 +177,9 @@ router.post('/:id/add', requireAuthentication, async (req, res, next) => {
     return;
   }
 
-  //todo verify auth here
+  const playlist = await getPlaylistDetailsById(req.params.id);
 
-  let counter = 0;
-  const [ result ] = await mysqlPool.query(
-    'SELECT admin FROM users WHERE id = ?',
-    req.user
-  );
-  console.log(" --Typeofavriable:",typeof(result[0].admin));
-  if (result[0].admin === 1) {
-    counter = 1;
-  }
-
-  if (req.user !== parseInt(req.params.userid) && counter !== 1) {
+  if (req.user !== playlist.ownerid && req.admin !== 1) {
     res.status(403).send({
       error: "Unauthorized to access the specified resource"
     });
@@ -212,18 +200,10 @@ router.post('/:id/add', requireAuthentication, async (req, res, next) => {
  * Route to delete a playlist.
  */
 router.delete('/:id', requireAuthentication, async (req, res, next) => {
-  let counter = 0;
-  const [ result ] = await mysqlPool.query(
-    'SELECT admin FROM users WHERE id = ?',
-    req.user
-  );
-  console.log(" --Typeofavriable:",typeof(result[0].admin));
-  if (result[0].admin === 1) {
-    counter = 1;
-  }
+  
+  const oldPlaylist = await getPlaylistDetailsById(req.params.id);
 
-
-  if (req.user !== parseInt(req.params.ownerid) && counter !== 1) {
+  if (req.user !== oldPlaylist.ownerid && req.admin !== 1) {
     res.status(403).send({
       error: "Unauthorized to access the specified resource"
     });
