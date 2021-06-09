@@ -160,7 +160,7 @@ router.put('/:id', requireAuthentication, async (req, res, next) => {
 
 });
 
-router.post('/:id/add', async (req, res, next) => {
+router.post('/:id/add', requireAuthentication, async (req, res, next) => {
   let playlist = await getSongsByPlaylistId(parseInt(req.params.id));
   let song = await getSongById(parseInt(req.body.songid));
 
@@ -181,9 +181,26 @@ router.post('/:id/add', async (req, res, next) => {
 
   //todo verify auth here
 
-  const result = await addSongToPlaylist(parseInt(req.params.id), parseInt(req.body.songid));
+  let counter = 0;
+  const [ result ] = await mysqlPool.query(
+    'SELECT admin FROM users WHERE id = ?',
+    req.user
+  );
+  console.log(" --Typeofavriable:",typeof(result[0].admin));
+  if (result[0].admin === 1) {
+    counter = 1;
+  }
 
-  if(!! result){
+  if (req.user !== parseInt(req.params.userid) && counter !== 1) {
+    res.status(403).send({
+      error: "Unauthorized to access the specified resource"
+    });
+  }
+
+
+  const results = await addSongToPlaylist(parseInt(req.params.id), parseInt(req.body.songid));
+
+  if(!! results){
     res.status(201).send();
   }
   else{

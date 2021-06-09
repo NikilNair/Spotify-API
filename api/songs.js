@@ -43,7 +43,7 @@ const upload = multer({
 /*
  * Route to create a new song.
  */
-router.post('/', upload.single('audio'), async (req, res) =>{
+router.post('/', upload.single('audio'), requireAuthentication, async (req, res) =>{
   console.log(req.file);
   // console.log(req.body.ownerid);
 
@@ -59,6 +59,22 @@ router.post('/', upload.single('audio'), async (req, res) =>{
   }
 
   // todo verify user here
+
+  let counter = 0;
+  const [ result ] = await mysqlPool.query(
+    'SELECT admin FROM users WHERE id = ?',
+    req.user
+  );
+  console.log(" --Typeofavriable:",typeof(result[0].admin));
+  if (result[0].admin === 1) {
+    counter = 1;
+  }
+
+  if (req.user !== parseInt(req.params.ownerid) && counter !== 1) {
+    res.status(403).send({
+      error: "Unauthorized to access the specified resource"
+    });
+  }
 
   let song = {
     name: req.body.name,
@@ -124,7 +140,7 @@ router.get('/:id', async (req, res, next) => {
     const song = await getSongById(parseInt(req.params.id));
     if (song) {
       res.status(200).send(song);
-      
+
     } else {
       next();
     }
