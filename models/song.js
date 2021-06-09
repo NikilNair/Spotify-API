@@ -60,6 +60,39 @@ async function replaceSongById(id, song) {
 }
 exports.replaceSongById = replaceSongById;
 
+
+
+async function getSongsCount() {
+  const [ results ] = await mysqlPool.query(
+    'SELECT COUNT(*) AS count FROM songs'
+  );
+  return results[0].count;
+}
+
+async function getAllSongs(page) {
+  const count = await getSongsCount();
+  const pageSize = 10;
+  const lastPage = Math.ceil(count / pageSize);
+  page = page > lastPage ? lastPage : page;
+  page = page < 1 ? 1 : page;
+  const offset = (page - 1) * pageSize;
+
+  const [ results ] = await mysqlPool.query(
+    'SELECT * FROM songs ORDER BY id LIMIT ?,?',
+    [ offset, pageSize ]
+  );
+
+  return {
+    songs: results,
+    page: page,
+    totalPages: lastPage,
+    pageSize: pageSize,
+    count: count
+  };
+}
+exports.getAllSongs = getAllSongs;
+
+
 /*
  * Executes a MySQL query to delete a song specified by its ID.  Returns
  * a Promise that resolves to true if the song specified by `id`

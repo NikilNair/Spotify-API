@@ -17,7 +17,8 @@ const {
   insertNewSong,
   getSongById,
   replaceSongById,
-  deleteSongById
+  deleteSongById,
+  getAllSongs
 } = require('../models/song');
 const { getUserById } = require('../models/user');
 
@@ -40,10 +41,38 @@ const upload = multer({
   }
 });
 
+
+router.get('/', async (req, res) => {
+  try {
+    /*
+     * Fetch page info, generate HATEOAS links for surrounding pages and then
+     * send response.
+     */
+    const songPage = await getAllSongs(parseInt(req.query.page) || 1);
+    songPage.links = {};
+    if (songPage.page < songPage.totalPages) {
+      songPage.links.nextPage = `/songs?page=${songPage.page + 1}`;
+      songPage.links.lastPage = `/songs?page=${songPage.totalPages}`;
+    }
+    if (songPage.page > 1) {
+      songPage.links.prevPage = `/songs?page=${playlistPage.page - 1}`;
+      songPage.links.firstPage = '/songs?page=1';
+    }
+    res.status(200).send(songPage);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      error: "Error fetching songs list.  Please try again later."
+    });
+  }
+})
+
+
+
 /*
  * Route to create a new song.
  */
-router.post('/', upload.single('audio'), requireAuthentication, async (req, res) =>{
+router.post('/', upload.single('audio'), requireAuthentication, async (req, res) => {
   console.log(req.file);
   // console.log(req.body.ownerid);
 
