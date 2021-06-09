@@ -90,9 +90,10 @@ router.post('/', upload.single('audio'), requireAuthentication, async (req, res)
   // todo verify user here
 
   let counter = 0;
+  console.log(req.user);
   const [ result ] = await mysqlPool.query(
     'SELECT admin FROM users WHERE id = ?',
-    req.user
+    parseInt(req.user)
   );
   console.log(" --Typeofavriable:",typeof(result[0].admin));
   if (result[0].admin === 1) {
