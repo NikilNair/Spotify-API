@@ -155,3 +155,35 @@ async function getPlaylistsByOwnerId(id) {
   return results;
 }
 exports.getPlaylistsByOwnerId = getPlaylistsByOwnerId;
+
+/*
+ * Executes a MySQL query to add a song to a playlist 
+*/
+async function checkSongInPlaylist(playlistid, songid) {
+  const [ result ] = await mysqlPool.query(
+    'SELECT * from inPlaylist WHERE playlistid = ? and songid = ?',
+    [playlistid, songid]
+  );
+
+  return result.length > 0;
+}
+exports.checkSongInPlaylist = checkSongInPlaylist;
+
+
+/*
+ * Executes a MySQL query to add a song to a playlist 
+*/
+async function addSongToPlaylist(playlistid, songid) {
+  const data = {
+    playlistid: playlistid,
+    songid: songid
+  }
+  const [ result ] = await mysqlPool.query(
+    'INSERT INTO inPlaylist SET ?',
+    data
+  );
+
+
+  return result.affectedRows > 0;
+}
+exports.addSongToPlaylist = addSongToPlaylist;
